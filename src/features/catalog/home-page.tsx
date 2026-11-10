@@ -45,7 +45,7 @@ export function HomePage() {
   return (
     <div className="mx-auto max-w-[1200px] px-4 pb-28 md:px-8">
       <section className="grid items-center gap-8 py-8 md:grid-cols-2 md:py-14">
-        <div>
+        <div key={current.title} className="motion-rise">
           <p className="text-sm text-gold-2">{current.eyebrow}</p>
           <h1 className="mt-3 max-w-xl font-display text-4xl leading-none text-cream md:text-6xl">{current.title}</h1>
           <p className="mt-4 max-w-md text-sm leading-6 text-gold-2">{current.text}</p>
@@ -54,8 +54,8 @@ export function HomePage() {
           </Button>
           <div className="mt-6 flex gap-1" role="group" aria-label="Destaques">
             {slides.map((item, index) => (
-              <button key={item.title} type="button" aria-label={`Destaque ${index + 1}`} aria-current={slide === index ? 'true' : undefined} className="grid size-6 place-items-center" onClick={() => setSlide(index)}>
-                <span className={`size-2 rounded-full ${slide === index ? 'bg-amber' : 'bg-line'}`} />
+              <button key={item.title} type="button" aria-label={`Destaque ${index + 1}`} aria-current={slide === index ? 'true' : undefined} className="motion-press grid size-6 place-items-center" onClick={() => setSlide(index)}>
+                <span className={`motion-dot size-2 rounded-full ${slide === index ? 'bg-amber' : 'bg-line'}`} />
               </button>
             ))}
           </div>
@@ -64,7 +64,7 @@ export function HomePage() {
           priority
           art={{ image: '/nfts/emerald-960.webp', thumb: '/nfts/emerald-640.webp', imageAlt: 'Macaco ilustrado com jaqueta verde e óculos redondos' }}
           sizes="(min-width: 768px) 520px, 90vw"
-          className="aspect-square rounded-[28px] bg-[#d9d3c3]"
+          className="motion-float aspect-square rounded-[28px] bg-[#d9d3c3]"
         />
       </section>
 
@@ -77,7 +77,7 @@ export function HomePage() {
           ['Lançamentos gênesis de edição limitada', 'Colecione edições escassas diretamente dos criadores antes da revelação pública.'],
           ['Arte digital selecionada e muito mais', 'Explore novos artistas, coleções verificadas e obras digitais que definem a cultura.'],
         ].map(([title, text]) => (
-          <article key={title} className="grid items-center gap-4 rounded-xl bg-panel p-4 sm:grid-cols-[140px_1fr]">
+          <article key={title} className="motion-card grid items-center gap-4 overflow-hidden rounded-xl bg-panel p-4 sm:grid-cols-[140px_1fr]">
             <NftMedia art={{ image: '/nfts/emerald-960.webp', thumb: '/nfts/emerald-640.webp', imageAlt: '' }} className="aspect-square rounded-lg" />
             <div>
               <h2 className="font-semibold">{title}</h2>
@@ -98,7 +98,7 @@ export function HomePage() {
             ['15 de setembro', 'Raridade, atributos e procedência'],
             ['15 de setembro', 'Como proteger sua carteira'],
           ].map(([date, title]) => (
-            <article key={title} className="overflow-hidden rounded-xl bg-panel">
+            <article key={title} className="motion-card overflow-hidden rounded-xl bg-panel">
               <NftMedia art={{ image: '/nfts/ivory-960.webp', thumb: '/nfts/ivory-640.webp', imageAlt: '' }} className="aspect-[4/3]" />
               <div className="p-4">
                 <p className="text-xs text-gold">{date}</p>

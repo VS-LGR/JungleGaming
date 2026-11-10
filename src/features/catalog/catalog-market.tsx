@@ -131,7 +131,7 @@ export function CatalogMarket() {
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-3" aria-busy={catalog.isFetching}>
               {catalog.data.items.map((nft) => (
                 <article key={nft.id} className="min-w-0">
-                  <Link to="/nfts/$nftId" params={{ nftId: nft.id }} search={{ edition: '1-50', qty: 1 }} className="group block">
+                  <Link to="/nfts/$nftId" params={{ nftId: nft.id }} search={{ edition: '1-50', qty: 1 }} className="motion-card group block">
                     <div className="relative aspect-square overflow-hidden rounded-xl bg-[#d9d3c3]">
                       {nft.rare ? <Badge className="absolute top-3 left-3">RARO</Badge> : null}
                       <NftMedia art={nft} />
@@ -235,7 +235,7 @@ function Filters({
           })}
         </ul>
       </div>
-      <Link to="/nfts/$nftId" params={{ nftId: 'cosmic-bloom-0118' }} search={{ edition: '1-50', qty: 1 }} className="block overflow-hidden rounded-xl bg-panel">
+      <Link to="/nfts/$nftId" params={{ nftId: 'cosmic-bloom-0118' }} search={{ edition: '1-50', qty: 1 }} className="motion-card block overflow-hidden rounded-xl bg-panel">
         <p className="px-4 pt-4 font-display text-amber">NFT EM DESTAQUE</p>
         <p className="px-4 text-sm">OFERTA LIMITADA</p>
         <NftMedia art={{ image: '/nfts/violet-960.webp', thumb: '/nfts/violet-640.webp', imageAlt: 'Cosmic Bloom em destaque' }} className="mt-3 aspect-square" />

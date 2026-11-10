@@ -74,8 +74,82 @@
   }
 }
 
+.motion-rise {
+  animation: kurio-rise 0.55s ease both;
+}
+
+.motion-float {
+  animation: kurio-float 7s ease-in-out infinite;
+}
+
+.motion-card {
+  transition: transform 280ms ease;
+}
+
+.motion-card:hover {
+  transform: translateY(-4px);
+}
+
+.motion-card img {
+  transition: transform 500ms ease;
+}
+
+.motion-card:hover img {
+  transform: scale(1.045);
+}
+
+.motion-dot {
+  transition: transform 200ms ease;
+}
+
+.motion-dot:hover {
+  transform: scale(1.35);
+}
+
+.motion-press {
+  transition: transform 180ms ease, color 180ms ease, background-color 180ms ease;
+}
+
+.motion-press:hover {
+  transform: translateY(-1px);
+}
+
+.motion-press:active {
+  transform: scale(0.97);
+}
+
+@keyframes kurio-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes kurio-float {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .shimmer::after {
+  .shimmer::after,
+  .motion-rise,
+  .motion-float {
     animation: none;
+  }
+
+  .motion-card,
+  .motion-card img,
+  .motion-dot,
+  .motion-press {
+    transition: none;
+  }
+
+  .motion-card:hover,
+  .motion-card:hover img,
+  .motion-dot:hover,
+  .motion-press:hover,
+  .motion-press:active {
+    transform: none;
   }
 }

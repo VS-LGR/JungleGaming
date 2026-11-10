@@ -80,13 +80,13 @@ function SiteHeader({ onUnavailable }: { onUnavailable: (topic: string) => void 
   return (
     <header className="border-b border-line/70">
       <div className="mx-auto flex h-[72px] max-w-[1200px] items-center gap-4 px-4 md:px-8">
-        <Link to="/" search={emptyHomeSearch} className="font-display text-xl tracking-[0.18em] text-cream">
+        <Link to="/" search={emptyHomeSearch} className="motion-press font-display text-xl tracking-[0.18em] text-cream">
           KURIO
         </Link>
         <nav className="mx-auto hidden items-center gap-7 md:flex" aria-label="Principal">
           {nav.map((item) =>
             'topic' in item ? (
-              <button key={item.label} type="button" className="text-sm text-gold-2 hover:text-cream" onClick={() => onUnavailable(item.topic)}>
+              <button key={item.label} type="button" className="motion-press text-sm text-gold-2 hover:text-cream" onClick={() => onUnavailable(item.topic)}>
                 {item.label}
               </button>
             ) : (
@@ -95,7 +95,7 @@ function SiteHeader({ onUnavailable }: { onUnavailable: (topic: string) => void 
                 to="/"
                 search={emptyHomeSearch}
                 hash={item.hash || undefined}
-                className={`text-sm ${path === '/' && item.label === 'Início' ? 'text-cream' : 'text-gold-2 hover:text-cream'}`}
+                className={`motion-press text-sm ${path === '/' && item.label === 'Início' ? 'text-cream' : 'text-gold-2 hover:text-cream'}`}
                 activeOptions={{ exact: true, includeHash: false }}
               >
                 <span className={path === '/' && item.label === 'Início' ? 'border-b-2 border-amber pb-1' : ''}>{item.label}</span>
@@ -104,10 +104,10 @@ function SiteHeader({ onUnavailable }: { onUnavailable: (topic: string) => void 
           )}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          <button type="button" className="hidden size-10 items-center justify-center text-cream md:inline-flex" aria-label="Buscar coleções" onClick={() => setSearchOpen(true)}>
+          <button type="button" className="motion-press hidden size-10 items-center justify-center text-cream md:inline-flex" aria-label="Buscar coleções" onClick={() => setSearchOpen(true)}>
             <Search className="size-5" />
           </button>
-          <Link to="/carrinho" className="relative inline-flex size-10 items-center justify-center" aria-label={`Carrinho, ${count} itens`}>
+          <Link to="/carrinho" className="motion-press relative inline-flex size-10 items-center justify-center" aria-label={`Carrinho, ${count} itens`}>
             <ShoppingBag className="size-5" />
             <span className="absolute top-1 right-0 min-w-4 rounded-full bg-amber px-1 text-center text-[10px] font-bold text-ink">{count}</span>
           </Link>

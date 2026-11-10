@@ -22,8 +22,11 @@ blob-report
 !.vscode/extensions.json
 .idea
 .DS_Store
+.vercel
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
