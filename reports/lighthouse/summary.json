@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-10T21:49:59.293Z",
+  "url": "http://127.0.0.1:4173",
+  "node": "v20.18.0",
+  "lighthouse": "12.8.2",
+  "targets": {
+    "performance": 90,
+    "accessibility": 95,
+    "bestPractices": 95,
+    "seo": 90
+  },
+  "summary": [
+    {
+      "page": "home",
+      "profile": "mobile",
+      "performance": 90,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 92,
+      "lcp": 2922,
+      "cls": 0.027,
+      "tbt": 47
+    },
+    {
+      "page": "home",
+      "profile": "desktop",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 92,
+      "lcp": 168,
+      "cls": 0.004,
+      "tbt": 0
+    },
+    {
+      "page": "detail",
+      "profile": "mobile",
+      "performance": 92,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 92,
+      "lcp": 2693,
+      "cls": 0.029,
+      "tbt": 21
+    },
+    {
+      "page": "detail",
+      "profile": "desktop",
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 92,
+      "lcp": 148,
+      "cls": 0,
+      "tbt": 0
+    }
+  ]
+}
