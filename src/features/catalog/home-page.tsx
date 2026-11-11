@@ -66,9 +66,9 @@ export function HomePage() {
                 <div key={item.title} className="hero-slide flex h-full flex-col" data-active={active} aria-hidden={active ? undefined : true} inert={active ? undefined : true}>
                   <p className="text-sm text-gold-2">{item.eyebrow}</p>
                   {active ? (
-                    <h1 className="mt-3 min-h-[3lh] max-w-xl font-display text-4xl leading-none break-words text-cream md:text-5xl lg:min-h-[2lh] lg:text-6xl">{item.title}</h1>
+                    <h1 className="mt-3 min-h-[3lh] max-w-xl font-display text-4xl leading-[1.45] break-words text-cream md:text-5xl lg:min-h-[2lh] lg:text-6xl">{item.title}</h1>
                   ) : (
-                    <p className="mt-3 min-h-[3lh] max-w-xl font-display text-4xl leading-none break-words text-cream md:text-5xl lg:min-h-[2lh] lg:text-6xl">{item.title}</p>
+                    <p className="mt-3 min-h-[3lh] max-w-xl font-display text-4xl leading-[1.45] break-words text-cream md:text-5xl lg:min-h-[2lh] lg:text-6xl">{item.title}</p>
                   )}
                   <p className="mt-4 max-w-md flex-1 text-sm leading-6 text-gold-2">{item.text}</p>
                   <Button className="mt-6 self-start" onClick={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })}>

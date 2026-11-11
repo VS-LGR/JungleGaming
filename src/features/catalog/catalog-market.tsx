@@ -68,7 +68,7 @@ export function CatalogMarket() {
   )
 
   return (
-    <>
+    <div id="catalogo" className="mt-12 scroll-mt-8 md:mt-20">
       <div className="mb-4 md:hidden">
         <form
           className="flex gap-2"
@@ -86,7 +86,7 @@ export function CatalogMarket() {
         </form>
       </div>
 
-      <section id="catalogo" className="grid scroll-mt-8 gap-6 md:grid-cols-[240px_1fr]">
+      <section className="grid gap-6 md:grid-cols-[240px_1fr]" aria-label="Loja">
         <aside className="hidden md:block">{filters}</aside>
         <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
           <SheetContent>
@@ -95,6 +95,12 @@ export function CatalogMarket() {
           </SheetContent>
         </Sheet>
         <div className="min-w-0">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-line/40 pb-4">
+            <div>
+              <p className="font-display text-xs tracking-[0.22em] text-amber">MERCADO KURIO</p>
+              <p className="mt-1 text-sm text-gold-2">{catalog.data ? `${catalog.data.total} obras com edição e preço em ETH` : 'Edições com preço em ETH'}</p>
+            </div>
+          </div>
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div className="flex flex-wrap gap-4 border-b border-line" role="tablist" aria-label="Recortes do catálogo">
               {tabs.map((tab) => {
@@ -135,14 +141,15 @@ export function CatalogMarket() {
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-3" aria-busy={catalog.isFetching}>
               {catalog.data.items.map((nft) => (
                 <article key={nft.id} className="min-w-0">
-                  <Link to="/nfts/$nftId" params={{ nftId: nft.id }} search={{ edition: '1-50', qty: 1 }} className="motion-card group block">
+                  <Link to="/nfts/$nftId" params={{ nftId: nft.id }} search={{ edition: '1-50', qty: 1 }} className="motion-card group block rounded-2xl border border-line/40 bg-panel p-3">
                     <PointerTilt className="relative aspect-square overflow-hidden rounded-xl bg-[#d9d3c3]">
                       {nft.rare ? <Badge className="absolute top-3 left-3 z-10">RARO</Badge> : null}
                       <NftMedia art={nft} />
                       <span className="motion-reveal pointer-events-none absolute inset-x-3 bottom-3 z-10 rounded-full bg-ink/80 px-3 py-1 text-center text-xs text-cream">Abrir obra</span>
                     </PointerTilt>
-                    <h2 className="mt-3 truncate text-sm">{nft.name}</h2>
-                    <p className="text-sm font-semibold text-amber">
+                    <p className="mt-3 text-[11px] tracking-[0.16em] text-gold uppercase">{networks.find((item) => item.id === nft.network)?.label}</p>
+                    <h2 className="mt-1 truncate font-display text-lg tracking-wide">{nft.name}</h2>
+                    <p className="mt-1 text-sm font-semibold text-amber">
                       {formatEthLabel(nft.listPriceEth)}{' '}
                       {nft.compareAtEth ? <span className="font-normal text-gold line-through">{formatEth(nft.compareAtEth)} ETH</span> : null}
                     </p>
@@ -162,7 +169,7 @@ export function CatalogMarket() {
           ) : null}
         </div>
       </section>
-    </>
+    </div>
   )
 }
 
@@ -182,16 +189,17 @@ function Filters({
   const catalog = useQuery({ queryKey: ['nfts', search], queryFn: ({ signal }) => fetchCatalog(toQuery(search), signal) })
   const facets = catalog.data?.facets
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:rounded-2xl md:bg-panel md:p-5">
       <div>
-        <h2 className="mb-3 font-semibold">Coleções</h2>
+        <p className="font-display text-xs tracking-[0.22em] text-amber">A LOJA</p>
+        <h2 className="mt-2 mb-3 font-semibold">Coleções</h2>
         <ul className="space-y-2">
           {categories.map((category) => {
             const count = facets?.categories.find((item) => item.id === category.id)?.count ?? 0
             const active = search.category === category.id
             return (
               <li key={category.id}>
-                <button type="button" aria-pressed={active} className={`motion-press flex w-full justify-between text-sm ${active ? 'text-amber' : 'text-gold-2'}`} onClick={() => onChange({ category: active ? undefined : category.id })}>
+                <button type="button" aria-pressed={active} className={`motion-press flex w-full justify-between rounded-md px-2 py-1 text-left text-sm ${active ? 'bg-ink text-amber' : 'text-gold-2'}`} onClick={() => onChange({ category: active ? undefined : category.id })}>
                   <span>{category.label}</span>
                   <span>({count})</span>
                 </button>
@@ -231,7 +239,7 @@ function Filters({
             const active = search.network === network.id
             return (
               <li key={network.id}>
-                <button type="button" aria-pressed={active} className={`motion-press flex w-full justify-between text-sm ${active ? 'text-amber' : 'text-gold-2'}`} onClick={() => onChange({ network: active ? undefined : network.id })}>
+                <button type="button" aria-pressed={active} className={`motion-press flex w-full justify-between rounded-md px-2 py-1 text-left text-sm ${active ? 'bg-ink text-amber' : 'text-gold-2'}`} onClick={() => onChange({ network: active ? undefined : network.id })}>
                   <span>{network.label}</span>
                   <span>({count})</span>
                 </button>
