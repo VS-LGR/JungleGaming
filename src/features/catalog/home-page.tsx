@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from 'react'
 import { NftMedia } from '@/components/nft-media'
+import { PointerTilt } from '@/components/pointer-tilt'
 import { useUnavailable } from '@/components/shell'
 import { Button } from '@/components/ui/button'
 import type { CategoryId, NetworkId, SortId, TabId } from '@/contracts/types'
@@ -60,12 +61,14 @@ export function HomePage() {
             ))}
           </div>
         </div>
-        <NftMedia
-          priority
-          art={{ image: '/nfts/emerald-960.webp', thumb: '/nfts/emerald-640.webp', imageAlt: 'Macaco ilustrado com jaqueta verde e óculos redondos' }}
-          sizes="(min-width: 768px) 520px, 90vw"
-          className="motion-float aspect-square rounded-[28px] bg-[#d9d3c3]"
-        />
+        <PointerTilt className="overflow-hidden rounded-[28px]">
+          <NftMedia
+            priority
+            art={{ image: '/nfts/emerald-960.webp', thumb: '/nfts/emerald-640.webp', imageAlt: 'Macaco ilustrado com jaqueta verde e óculos redondos' }}
+            sizes="(min-width: 768px) 520px, 90vw"
+            className="motion-float aspect-square rounded-[28px] bg-[#d9d3c3]"
+          />
+        </PointerTilt>
       </section>
 
       <Suspense fallback={<div className="min-h-[100svh]" aria-hidden="true" />}>

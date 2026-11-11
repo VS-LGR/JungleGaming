@@ -4,6 +4,7 @@ import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { fetchCatalog } from '@/api/endpoints'
 import { NftMedia } from '@/components/nft-media'
+import { PointerTilt } from '@/components/pointer-tilt'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -132,10 +133,11 @@ export function CatalogMarket() {
               {catalog.data.items.map((nft) => (
                 <article key={nft.id} className="min-w-0">
                   <Link to="/nfts/$nftId" params={{ nftId: nft.id }} search={{ edition: '1-50', qty: 1 }} className="motion-card group block">
-                    <div className="relative aspect-square overflow-hidden rounded-xl bg-[#d9d3c3]">
-                      {nft.rare ? <Badge className="absolute top-3 left-3">RARO</Badge> : null}
+                    <PointerTilt className="relative aspect-square overflow-hidden rounded-xl bg-[#d9d3c3]">
+                      {nft.rare ? <Badge className="absolute top-3 left-3 z-10">RARO</Badge> : null}
                       <NftMedia art={nft} />
-                    </div>
+                      <span className="motion-reveal pointer-events-none absolute inset-x-3 bottom-3 z-10 rounded-full bg-ink/80 px-3 py-1 text-center text-xs text-cream">Abrir obra</span>
+                    </PointerTilt>
                     <h2 className="mt-3 truncate text-sm">{nft.name}</h2>
                     <p className="text-sm font-semibold text-amber">
                       {formatEthLabel(nft.listPriceEth)}{' '}
@@ -149,7 +151,7 @@ export function CatalogMarket() {
           {catalog.data && catalog.data.totalPages > 1 ? (
             <nav className="mt-6 flex justify-end gap-2" aria-label="Paginação">
               {Array.from({ length: catalog.data.totalPages }, (_, index) => index + 1).map((page) => (
-                <button key={page} type="button" aria-current={page === catalog.data?.page ? 'page' : undefined} className={`size-8 rounded-md border border-line text-sm ${page === catalog.data?.page ? 'bg-amber text-ink' : ''}`} onClick={() => update({ page }, false)}>
+                <button key={page} type="button" aria-current={page === catalog.data?.page ? 'page' : undefined} className={`motion-press size-8 rounded-md border border-line text-sm ${page === catalog.data?.page ? 'bg-amber text-ink' : ''}`} onClick={() => update({ page }, false)}>
                   {page}
                 </button>
               ))}
@@ -186,7 +188,7 @@ function Filters({
             const active = search.category === category.id
             return (
               <li key={category.id}>
-                <button type="button" aria-pressed={active} className={`flex w-full justify-between text-sm ${active ? 'text-amber' : 'text-gold-2'}`} onClick={() => onChange({ category: active ? undefined : category.id })}>
+                <button type="button" aria-pressed={active} className={`motion-press flex w-full justify-between text-sm ${active ? 'text-amber' : 'text-gold-2'}`} onClick={() => onChange({ category: active ? undefined : category.id })}>
                   <span>{category.label}</span>
                   <span>({count})</span>
                 </button>
@@ -226,7 +228,7 @@ function Filters({
             const active = search.network === network.id
             return (
               <li key={network.id}>
-                <button type="button" aria-pressed={active} className={`flex w-full justify-between text-sm ${active ? 'text-amber' : 'text-gold-2'}`} onClick={() => onChange({ network: active ? undefined : network.id })}>
+                <button type="button" aria-pressed={active} className={`motion-press flex w-full justify-between text-sm ${active ? 'text-amber' : 'text-gold-2'}`} onClick={() => onChange({ network: active ? undefined : network.id })}>
                   <span>{network.label}</span>
                   <span>({count})</span>
                 </button>

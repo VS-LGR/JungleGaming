@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Heart, Home, LogOut, Menu, Search, ShoppingBag, UserRound } from 'lucide-react'
-import { createContext, lazy, Suspense, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, lazy, Suspense, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { fetchCart } from '@/api/endpoints'
 import { Button } from '@/components/ui/button'
@@ -62,6 +62,19 @@ function SiteHeader({ onUnavailable }: { onUnavailable: (topic: string) => void 
   const owner = user?.id ?? getGuestId()
   const cart = useQuery({ queryKey: ['cart', owner], queryFn: ({ signal }) => fetchCart(signal) })
   const count = (cart.data ?? []).reduce((sum, item) => sum + item.quantity, 0)
+  const seenCount = useRef<number | null>(null)
+  const [pulseCart, setPulseCart] = useState(false)
+  useEffect(() => {
+    if (seenCount.current === null) {
+      seenCount.current = count
+      return
+    }
+    if (seenCount.current === count) return
+    seenCount.current = count
+    setPulseCart(true)
+    const timer = window.setTimeout(() => setPulseCart(false), 360)
+    return () => window.clearTimeout(timer)
+  }, [count])
   const [searchOpen, setSearchOpen] = useState(false)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -109,7 +122,7 @@ function SiteHeader({ onUnavailable }: { onUnavailable: (topic: string) => void 
           </button>
           <Link to="/carrinho" className="motion-press relative inline-flex size-10 items-center justify-center" aria-label={`Carrinho, ${count} itens`}>
             <ShoppingBag className="size-5" />
-            <span className="absolute top-1 right-0 min-w-4 rounded-full bg-amber px-1 text-center text-[10px] font-bold text-ink">{count}</span>
+            <span className={`absolute top-1 right-0 min-w-4 rounded-full bg-amber px-1 text-center text-[10px] font-bold text-ink ${pulseCart ? 'motion-pop' : ''}`}>{count}</span>
           </Link>
           {user ? (
             <Suspense fallback={<span className="inline-flex h-10 items-center rounded-full bg-amber px-3 text-sm font-semibold text-ink">{user.displayName.split(' ')[0]}</span>}>

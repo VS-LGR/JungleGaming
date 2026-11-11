@@ -118,6 +118,38 @@
   transform: scale(0.97);
 }
 
+.pointer-tilt {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  transition: transform 220ms ease;
+}
+
+.pointer-tilt[data-tilt='on'] {
+  transform: perspective(900px) rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
+}
+
+.motion-reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.group:hover .motion-reveal,
+.group:focus-visible .motion-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.motion-pop {
+  animation: kurio-pop 360ms ease;
+}
+
+@keyframes kurio-pop {
+  40% {
+    transform: scale(1.35);
+  }
+}
+
 @keyframes kurio-rise {
   from {
     opacity: 0;
@@ -149,7 +181,25 @@
   .motion-card:hover img,
   .motion-dot:hover,
   .motion-press:hover,
-  .motion-press:active {
+  .motion-press:active,
+  .pointer-tilt,
+  .pointer-tilt[data-tilt='on'],
+  .motion-reveal,
+  .group:hover .motion-reveal,
+  .group:focus-visible .motion-reveal {
     transform: none;
+  }
+
+  .motion-pop,
+  .pointer-tilt,
+  .pointer-tilt[data-tilt='on'],
+  .motion-reveal {
+    animation: none;
+    transition: none;
+  }
+
+  .group:hover .motion-reveal,
+  .group:focus-visible .motion-reveal {
+    opacity: 1;
   }
 }

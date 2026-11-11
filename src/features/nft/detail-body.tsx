@@ -6,6 +6,7 @@ import { addCartItem, addFavorite, fetchFavorites, fetchNft, removeFavorite } fr
 import { readError } from '@/api/client'
 import { BackBar, useUnavailable } from '@/components/shell'
 import { NftMedia } from '@/components/nft-media'
+import { PointerTilt } from '@/components/pointer-tilt'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { EditionId } from '@/contracts/types'
@@ -76,14 +77,14 @@ export function DetailBody() {
         <div className="grid grid-cols-[64px_1fr] gap-3">
           <div className="hidden flex-col gap-2 md:flex">
             {item.editions.map((entry) => (
-              <button key={entry.id} type="button" className="overflow-hidden rounded-md" aria-label={`Ver ${item.name}`} onClick={() => setEdition(entry.id)}>
+              <button key={entry.id} type="button" className="motion-press overflow-hidden rounded-md" aria-label={`Ver ${item.name}`} onClick={() => setEdition(entry.id)}>
                 <NftMedia art={item} />
               </button>
             ))}
           </div>
-          <div className="overflow-hidden rounded-2xl bg-[#d9d3c3]">
+          <PointerTilt className="overflow-hidden rounded-2xl bg-[#d9d3c3]">
             <NftMedia priority art={item} sizes="(min-width: 768px) 560px, 90vw" />
-          </div>
+          </PointerTilt>
         </div>
         <div>
           <div className="flex items-start justify-between gap-3">
@@ -119,7 +120,7 @@ export function DetailBody() {
           <div className="mt-4 flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2" aria-label="Quantidade">
               <button type="button" className="grid size-8 place-items-center rounded-full border border-line" aria-label="Diminuir quantidade" disabled={search.qty <= 1} onClick={() => setQty(search.qty - 1)}><Minus className="size-4" /></button>
-              <span className="w-6 text-center" aria-live="polite">{search.qty}</span>
+              <span key={search.qty} className="motion-pop w-6 text-center" aria-live="polite">{search.qty}</span>
               <button type="button" className="grid size-8 place-items-center rounded-full border border-line" aria-label="Aumentar quantidade" disabled={!edition.available || search.qty >= max} onClick={() => setQty(search.qty + 1)}><Plus className="size-4" /></button>
             </div>
             <p className="text-sm text-gold-2">{max === 0 ? 'Esgotada' : `Até ${max}`}</p>
