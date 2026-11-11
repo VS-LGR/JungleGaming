@@ -42,8 +42,51 @@ test('sessão expirada devolve ao login com o destino', async ({ page }) => {
   await login(page)
   await boot(page, 'session-expired')
   await page.goto('/conta/perfil')
-  await expect(page).toHaveURL(/\/entrar/)
+  await expect(page).toHaveURL(/\/entrar\?redirect=.*perfil/)
   await expect(page.getByText(/sessão expirou/i)).toBeVisible()
+})
+
+test('sessão expirada no pagamento permite retomar o checkout', async ({ page }) => {
+  await boot(page)
+  await login(page)
+  await page.goto('/pagamento')
+  await expect(page.getByRole('heading', { name: 'Perfil do colecionador' })).toBeVisible()
+  await boot(page, 'session-expired')
+  await page.reload()
+  await expect(page).toHaveURL(/\/entrar\?redirect=.*pagamento/)
+  const form = page.locator('form')
+  await form.getByLabel('E-mail', { exact: true }).fill('nova@kurio.test')
+  await form.getByLabel('Senha', { exact: true }).fill('Kurio#2026')
+  await form.getByRole('button', { name: 'Entrar', exact: true }).click()
+  await expect(page).toHaveURL(/\/pagamento/)
+  await expect(page.getByRole('heading', { name: 'Perfil do colecionador' })).toBeVisible()
+})
+
+test('o relógio local encerra a sessão de 12 horas', async ({ page }) => {
+  await boot(page)
+  await login(page)
+  await page.clock.install({ time: Date.now() })
+  await page.clock.fastForward('13:00:00')
+  await page.goto('/pagamento')
+  await expect(page).toHaveURL(/\/entrar\?redirect=.*pagamento/)
+  await expect(page.getByText(/sessão expirou/i)).toBeVisible()
+})
+
+test('avatar permanece após atualizar e recusa arquivo inválido', async ({ page }) => {
+  await boot(page)
+  await login(page)
+  await page.goto('/conta/perfil')
+  await page.getByLabel('Alterar avatar').setInputFiles({
+    name: 'nota.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from('nao e imagem'),
+  })
+  await expect(page.getByText('Use uma imagem válida.')).toBeVisible()
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64')
+  await page.getByLabel('Alterar avatar').setInputFiles({ name: 'avatar.png', mimeType: 'image/png', buffer: png })
+  await expect(page.getByRole('img', { name: 'Foto de Nova Sato' })).toBeVisible()
+  await page.reload()
+  await expect(page.getByRole('img', { name: 'Foto de Nova Sato' })).toBeVisible()
 })
 
 test('perfil, senha e carteiras permanecem após atualizar', async ({ page }) => {

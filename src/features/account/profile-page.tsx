@@ -75,7 +75,7 @@ export function ProfilePage() {
       await queryClient.invalidateQueries({ queryKey: ['session'] })
       toast.success('Avatar atualizado.')
     },
-    onError: (error) => toast.error(readError(error).message),
+    onError: (error) => toast.error(error instanceof Error && error.message === 'image' ? 'Use uma imagem válida.' : readError(error).message),
   })
 
   return (
@@ -94,7 +94,7 @@ export function ProfilePage() {
           <div>
             <Label>Avatar</Label>
             <div className="mt-2 flex items-center gap-3">
-              {user?.avatarUrl ? <img src={user.avatarUrl} alt="" className="size-12 rounded-full object-cover" /> : <span className="grid size-12 place-items-center rounded-full border border-line text-xs">Foto</span>}
+              {user?.avatarUrl ? <img src={user.avatarUrl} alt={`Foto de ${user.displayName}`} className="size-12 rounded-full object-cover" /> : <span className="grid size-12 place-items-center rounded-full border border-line text-xs">Foto</span>}
               <label className="cursor-pointer rounded-md bg-amber px-3 py-2 text-sm font-semibold text-ink">
                 Alterar
                 <input className="sr-only" type="file" accept="image/*" aria-label="Alterar avatar" onChange={(event) => { const file = event.target.files?.[0]; if (file) avatar.mutate(file) }} />
@@ -128,10 +128,15 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 
 function resizeImage(file: File) {
   return new Promise<string>((resolve, reject) => {
+    if (!file.type.startsWith('image/')) {
+      reject(new Error('image'))
+      return
+    }
     const reader = new FileReader()
     reader.onerror = () => reject(new Error('image'))
     reader.onload = () => {
       const image = new Image()
+      image.onerror = () => reject(new Error('image'))
       image.onload = () => {
         const canvas = document.createElement('canvas')
         canvas.width = 128

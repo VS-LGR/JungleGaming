@@ -48,7 +48,7 @@ export function HomePage() {
       <section className="grid items-center gap-8 py-8 md:grid-cols-2 md:py-14">
         <div key={current.title} className="motion-rise">
           <p className="text-sm text-gold-2">{current.eyebrow}</p>
-          <h1 className="mt-3 max-w-xl font-display text-4xl leading-none text-cream md:text-6xl">{current.title}</h1>
+          <h1 className="mt-3 max-w-xl font-display text-4xl leading-none break-words text-cream md:text-5xl lg:text-6xl">{current.title}</h1>
           <p className="mt-4 max-w-md text-sm leading-6 text-gold-2">{current.text}</p>
           <Button className="mt-6" onClick={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })}>
             EXPLORAR

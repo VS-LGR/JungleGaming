@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { Search } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { fetchCatalog } from '@/api/endpoints'
 import { NftMedia } from '@/components/nft-media'
 import { PointerTilt } from '@/components/pointer-tilt'
@@ -34,6 +34,8 @@ export function CatalogMarket() {
     placeholderData: keepPreviousData,
     staleTime: cachePolicy.catalog.staleTime,
   })
+  const sawCatalogError = useRef(false)
+  if (catalog.isError) sawCatalogError.current = true
 
   function update(partial: Partial<HomeSearch>, resetPage = true) {
     void navigate({
@@ -92,7 +94,7 @@ export function CatalogMarket() {
             <div className="mt-6">{filters}</div>
           </SheetContent>
         </Sheet>
-        <div>
+        <div className="min-w-0">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div className="flex flex-wrap gap-4 border-b border-line" role="tablist" aria-label="Recortes do catálogo">
               {tabs.map((tab) => {
@@ -125,6 +127,7 @@ export function CatalogMarket() {
               <Button className="mt-4" onClick={() => void catalog.refetch()}>Tentar novamente</Button>
             </div>
           ) : null}
+          {sawCatalogError.current && catalog.isSuccess ? <p className="sr-only" role="status">Catálogo atualizado.</p> : null}
           {catalog.data && catalog.data.items.length === 0 ? (
             <p className="rounded-lg border border-line p-6 text-gold-2">Nenhum NFT encontrado com esses filtros.</p>
           ) : null}

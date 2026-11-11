@@ -36,7 +36,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const signIn = useMutation({
     mutationFn: (values: z.infer<typeof loginSchema>) => login(values.email, values.password),
     onSuccess: async (session) => {
-      setToken(session.token)
+      setToken(session.token, session.expiresAt)
       await queryClient.invalidateQueries()
       await refreshRealtime(queryClient)
       void navigate({ href: redirect })
@@ -46,7 +46,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const signUp = useMutation({
     mutationFn: (values: z.infer<typeof registerSchema>) => register({ email: values.email, username: values.username, password: values.password, displayName: values.username }),
     onSuccess: async (session) => {
-      setToken(session.token)
+      setToken(session.token, session.expiresAt)
       await queryClient.invalidateQueries()
       await refreshRealtime(queryClient)
       void navigate({ href: redirect })

@@ -108,10 +108,11 @@ export function scheduleOrderResolution(orderId: string) {
     }, 800)
     return
   }
+  const wait = scenario === 'delayed-settle' ? 4_000 : 600
   window.setTimeout(() => {
     const order = settleOrder(orderId, 'confirmed')
     if (order) publishOrder(order)
-  }, 600)
+  }, wait)
 }
 
 function replayFor(socket: LiveSocket) {

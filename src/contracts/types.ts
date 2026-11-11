@@ -289,6 +289,8 @@ export type Database = {
   priceBumpApplied: boolean
   soldOutApplied: boolean
   staleEventApplied: boolean
+  catalogFailures: number
+  sessionRenewed: boolean
 }
 
 export const PASSWORD_HASH = '0d51448abf3dd93936605848964687ba0cb115f51c743419f2ddba7fa0d2166b'

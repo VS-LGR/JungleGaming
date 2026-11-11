@@ -43,7 +43,8 @@ O cenário ativo fica em `localStorage` (`kurio-scenario`). A URL `?cenario=` gr
 | `variable-latency` | atraso estável por URL |
 | `out-of-order` | páginas maiores respondem antes |
 | `offline` | falha de rede |
-| `server-error` | 503 no catálogo |
+| `server-error` | 503 no catálogo, inclusive na nova tentativa |
+| `transient-error` | as três primeiras listagens falham e a seguinte carrega |
 | `session-expired` | 401 em rota autenticada |
 | `register-conflict` | 409 no cadastro |
 | `coupon-invalid` | `KURIO10` deixa de valer |
@@ -51,6 +52,7 @@ O cenário ativo fica em `localStorage` (`kurio-scenario`). A URL `?cenario=` gr
 | `price-changed` | Emerald Ape sobe 0,100 ETH |
 | `edition-sold-out` | edição 1/50 do Emerald Ape esgota |
 | `order-timeout` | a criação demora e a mesma chave recupera o pedido |
+| `delayed-settle` | o pedido fica pendente por 4 s antes de confirmar |
 | `payment-confirmed` | recibo confirmado |
 | `payment-refused` | pagamento recusado, carrinho preservado |
 | `favorite-fail` | favorito responde 500 |
@@ -73,7 +75,7 @@ Cupom válido no cenário padrão: `KURIO10` (10%). `VENCIDO` sempre expira. Qua
 | `npm run preview` | serve o `dist` |
 | `npm run typecheck` | `tsc -b --noEmit` |
 | `npm run lint` | oxlint |
-| `npm run test:e2e` | Playwright em Chromium, 1440 e 390 |
+| `npm run test:e2e` | Playwright em Chromium, 1440 e 390; o HTML fica em `reports/playwright` e o trace só quando um teste falha |
 | `npm run test:e2e:update` | atualiza os baselines visuais |
 | `npm run lighthouse` | três medições de início e detalhe, mobile e desktop |
 

@@ -87,6 +87,31 @@ test('clique repetido e timeout reutilizam o mesmo pedido', async ({ page }) => 
   await expect(page.getByText('Seu carrinho está vazio.')).toBeVisible()
 })
 
+test('a confirmação remove só a quantidade comprada', async ({ page, context }) => {
+  await boot(page, 'delayed-settle')
+  await login(page)
+  const cart = await context.newPage()
+  await cart.goto('/carrinho')
+  await expect(cart.getByRole('heading', { name: 'Sage Nomad #0009' })).toBeVisible()
+  await page.goto('/pagamento')
+  await page.getByRole('button', { name: 'Conectar', exact: true }).click()
+  await expect(page.getByText(/conectada\./i)).toBeVisible()
+  await page.getByRole('button', { name: 'Confirmar compra' }).click()
+  await page.waitForFunction(() => {
+    const raw = localStorage.getItem('kurio-db-v1')
+    if (!raw) return false
+    const db = JSON.parse(raw) as { orders?: { status: string; items: { quantity: number }[] }[] }
+    return db.orders?.some((order) => order.status === 'pending' && order.items.some((item) => item.quantity === 1)) ?? false
+  })
+  await cart.getByRole('button', { name: 'Aumentar Sage Nomad #0009' }).click()
+  await expect(cart.getByRole('article').filter({ hasText: 'Sage Nomad #0009' }).getByText('2', { exact: true })).toBeVisible()
+  await expect(page.getByText('THANK YOU')).toBeVisible({ timeout: 20_000 })
+  await cart.reload()
+  const row = cart.getByRole('article').filter({ hasText: 'Sage Nomad #0009' })
+  await expect(row.getByRole('heading', { name: 'Sage Nomad #0009' })).toBeVisible()
+  await expect(row.getByText('1', { exact: true })).toBeVisible()
+})
+
 test('cotação desatualizada bloqueia a confirmação', async ({ page }) => {
   await boot(page)
   await login(page)

@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'kurio-token'
+const EXPIRY_KEY = 'kurio-session-exp'
 const GUEST_KEY = 'kurio-guest-id'
 const SCENARIO_KEY = 'kurio-scenario'
 const ATTEMPT_KEY = 'kurio-order-attempt'
@@ -7,10 +8,30 @@ export function getToken() {
   return localStorage.getItem(TOKEN_KEY)
 }
 
-export function setToken(token: string | null) {
-  if (token) localStorage.setItem(TOKEN_KEY, token)
-  else localStorage.removeItem(TOKEN_KEY)
+export function setToken(token: string | null, expiresAt?: string | null) {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token)
+    if (expiresAt) localStorage.setItem(EXPIRY_KEY, expiresAt)
+  } else {
+    localStorage.removeItem(TOKEN_KEY)
+    localStorage.removeItem(EXPIRY_KEY)
+  }
   window.dispatchEvent(new Event('kurio-auth'))
+}
+
+export function getSessionExpiry() {
+  return localStorage.getItem(EXPIRY_KEY)
+}
+
+export function setSessionExpiry(expiresAt: string) {
+  localStorage.setItem(EXPIRY_KEY, expiresAt)
+}
+
+export function sessionExpiredLocally(now = Date.now()) {
+  const expiry = getSessionExpiry()
+  if (!expiry) return false
+  const at = Date.parse(expiry)
+  return Number.isFinite(at) && at <= now
 }
 
 export function getGuestId() {

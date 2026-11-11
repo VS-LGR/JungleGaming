@@ -96,7 +96,7 @@ function SiteHeader({ onUnavailable }: { onUnavailable: (topic: string) => void 
         <Link to="/" search={emptyHomeSearch} className="motion-press font-display text-xl tracking-[0.18em] text-cream">
           KURIO
         </Link>
-        <nav className="mx-auto hidden items-center gap-7 md:flex" aria-label="Principal">
+        <nav className="mx-auto hidden min-w-0 items-center gap-3 md:flex lg:gap-7" aria-label="Principal">
           {nav.map((item) =>
             'topic' in item ? (
               <button key={item.label} type="button" className="motion-press text-sm text-gold-2 hover:text-cream" onClick={() => onUnavailable(item.topic)}>

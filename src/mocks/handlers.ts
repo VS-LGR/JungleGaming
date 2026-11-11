@@ -39,6 +39,16 @@ async function gate(request: Request) {
     await delay(180)
     return apiError(503, 'unavailable', 'O mercado está indisponível no momento.')
   }
+  if (scenario === 'transient-error' && url.pathname === '/api/nfts' && request.method === 'GET') {
+    const db = loadDb()
+    const seen = db.catalogFailures ?? 0
+    if (seen < 3) {
+      db.catalogFailures = seen + 1
+      saveDb(db)
+      await delay(180)
+      return apiError(503, 'unavailable', 'O mercado está indisponível no momento.')
+    }
+  }
   let ms = 90
   if (scenario === 'slow') ms = 1600
   if (scenario === 'variable-latency') ms = 80 + (hashString(url.pathname + url.search) % 640)
@@ -56,7 +66,7 @@ async function sha256(value: string) {
 }
 
 function sessionUser(request: Request) {
-  if (readScenario() === 'session-expired') {
+  if (readScenario() === 'session-expired' && !loadDb().sessionRenewed) {
     return { error: apiError(401, 'session_expired', 'Sua sessão expirou.') }
   }
   const token = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '')
@@ -151,6 +161,7 @@ export const handlers = [
     const token = crypto.randomUUID()
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 12).toISOString()
     db.sessions.push({ token, userId: user.id, expiresAt })
+    if (readScenario() === 'session-expired') db.sessionRenewed = true
     mergeCarts(db, cartOwner(null, guestId(request)), cartOwner(user, null))
     saveDb(db)
     return HttpResponse.json({ token, expiresAt, user: publicUser(user) }, { status: 201 })
@@ -170,6 +181,7 @@ export const handlers = [
     const token = crypto.randomUUID()
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 12).toISOString()
     db.sessions.push({ token, userId: user.id, expiresAt })
+    if (readScenario() === 'session-expired') db.sessionRenewed = true
     mergeCarts(db, cartOwner(null, guestId(request)), cartOwner(user, null))
     saveDb(db)
     return HttpResponse.json({ token, expiresAt, user: publicUser(user) })

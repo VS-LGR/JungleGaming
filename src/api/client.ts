@@ -2,7 +2,7 @@ import axios from 'axios'
 import type { ApiErrorBody, Quote } from '@/contracts/types'
 import { cachePolicy } from '@/lib/cache-policy'
 import { mswReady } from '@/msw-ready'
-import { getGuestId, getToken, setToken } from '@/lib/storage'
+import { getGuestId, getToken, sessionExpiredLocally, setToken } from '@/lib/storage'
 
 export type ApiFailure = ApiErrorBody & { error: ApiErrorBody['error'] & { quote?: Quote } }
 
@@ -14,6 +14,11 @@ export const api = axios.create({
 api.interceptors.request.use(async (config) => {
   await mswReady
   const token = getToken()
+  if (token && sessionExpiredLocally()) {
+    setToken(null)
+    window.dispatchEvent(new CustomEvent('kurio-unauthorized'))
+    throw new axios.CanceledError('session-expired')
+  }
   config.headers.set('X-Guest-Id', getGuestId())
   if (token) config.headers.set('Authorization', `Bearer ${token}`)
   return config

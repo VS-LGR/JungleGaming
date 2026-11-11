@@ -13,7 +13,7 @@ import type {
   WalletProviderId,
 } from '@/contracts/types'
 import { api, isTimeout } from '@/api/client'
-import { readOrderAttempt, writeOrderAttempt } from '@/lib/storage'
+import { readOrderAttempt, setSessionExpiry, writeOrderAttempt } from '@/lib/storage'
 
 export async function fetchCatalog(query: CatalogQuery, signal?: AbortSignal) {
   const { data } = await api.get<CatalogResponse>('/nfts', {
@@ -39,6 +39,7 @@ export async function fetchNft(id: string, signal?: AbortSignal) {
 
 export async function fetchSession(signal?: AbortSignal) {
   const { data } = await api.get<SessionResponse>('/auth/session', { signal })
+  if (data.expiresAt) setSessionExpiry(data.expiresAt)
   return data
 }
 

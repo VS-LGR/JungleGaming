@@ -49,7 +49,9 @@ O MSW remove o prefixo `/socket.io/` antes de casar a URL, então o handler escu
 
 ## Sessão
 
-O token opaco fica em `kurio-token` e vale 12 horas. A senha fica só como SHA-256. O visitante tem `kurio-guest-id`. Um 401 fora de login e cadastro apaga o token, limpa o cache privado e manda para `/entrar`, guardando o caminho atual em `redirect`.
+O token opaco fica em `kurio-token` e vale 12 horas. O vencimento fica em `kurio-session-exp`. A senha fica só como SHA-256. O visitante tem `kurio-guest-id`. Um 401 fora de login e cadastro, ou o vencimento local das 12 horas, apaga o token, limpa o cache privado e manda para `/entrar`, guardando o caminho atual em `redirect`. Um novo login retoma esse caminho, inclusive `/pagamento`.
+
+O cenário `session-expired` invalida a sessão atual. O login seguinte marca a sessão como renovada e volta a valer. O relógio do Playwright não alcança o service worker do MSW; o vencimento de 12 horas é lido no cliente, e os testes avançam esse relógio com `page.clock`. Latência e liquidação do pedido continuam nos cenários.
 
 Rotas privadas: `/pagamento`, `/pedidos/$orderId`, `/conta/perfil`, `/conta/carteiras`.
 
@@ -59,7 +61,7 @@ O dono é `user:{id}` ou `guest:{guestId}`. Incluir soma a quantidade; alterar d
 
 A cotação calcula subtotal, 10% de desconto quando o cupom vale, taxa de rede (`ethereum` 0.016, `polygon` 0.008, `solana` 0.004) e total com `decimal.js` (precisão 40). O `quoteId` inclui a versão dos itens, o cupom e a rede. A cotação fica bloqueada se estiver vazia, indisponível, com preço diferente do visto ou com cupom inválido. O pagamento só confirma depois que o colecionador aceita a cotação nova e a carteira simulada está conectada.
 
-O sucesso remove só as quantidades compradas e baixa o estoque. A recusa não mexe no carrinho. O recibo guarda o snapshot: uma mudança posterior no catálogo não altera os valores. “Ver no Etherscan” abre `/explorador/:tx`, um explorador simulado.
+O sucesso remove só as quantidades compradas e baixa o estoque. Quantidade acrescentada enquanto o pedido está pendente permanece no carrinho. A recusa não mexe no carrinho. O cenário `delayed-settle` espera 4 s para tornar essa janela reproduzível. `transient-error` falha as três leituras do catálogo que o TanStack Query tenta sozinho; o botão Tentar novamente recebe a lista. O recibo guarda o snapshot: uma mudança posterior no catálogo não altera os valores. “Ver no Etherscan” abre `/explorador/:tx`, um explorador simulado.
 
 ## Cache
 

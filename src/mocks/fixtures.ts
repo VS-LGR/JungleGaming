@@ -261,5 +261,7 @@ export function createSeed(): Database {
     priceBumpApplied: false,
     soldOutApplied: false,
     staleEventApplied: false,
+    catalogFailures: 0,
+    sessionRenewed: false,
   }
 }

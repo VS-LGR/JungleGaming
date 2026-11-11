@@ -64,3 +64,12 @@ test('cenário vazio, erro e skeleton', async ({ page }) => {
   await expect(page.getByTestId('catalog-skeleton')).toBeVisible()
   await expect(page.getByRole('link', { name: /emerald ape #0042/i })).toBeVisible()
 })
+
+test('falha transitória volta a carregar na nova tentativa', async ({ page }) => {
+  await boot(page, 'transient-error')
+  await page.goto('/')
+  await expect(page.getByRole('alert')).toContainText('Não foi possível carregar o catálogo.')
+  await page.getByRole('button', { name: 'Tentar novamente' }).click()
+  await expect(page.getByRole('link', { name: /emerald ape #0042/i })).toBeVisible()
+  await expect(page.getByRole('status').filter({ hasText: 'Catálogo atualizado.' })).toBeAttached()
+})
