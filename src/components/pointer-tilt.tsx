@@ -25,6 +25,8 @@ export function PointerTilt({
     node.dataset.tilt = 'on'
     node.style.setProperty('--tilt-x', `${(x * max).toFixed(2)}deg`)
     node.style.setProperty('--tilt-y', `${(-y * max).toFixed(2)}deg`)
+    node.style.setProperty('--pointer-x', `${((x + 0.5) * 100).toFixed(1)}%`)
+    node.style.setProperty('--pointer-y', `${((y + 0.5) * 100).toFixed(1)}%`)
   }
 
   function leave() {
@@ -33,6 +35,8 @@ export function PointerTilt({
     delete node.dataset.tilt
     node.style.removeProperty('--tilt-x')
     node.style.removeProperty('--tilt-y')
+    node.style.removeProperty('--pointer-x')
+    node.style.removeProperty('--pointer-y')
   }
 
   return (

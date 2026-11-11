@@ -86,7 +86,7 @@ export function CatalogMarket() {
         </form>
       </div>
 
-      <section className="grid gap-6 md:grid-cols-[240px_1fr]" aria-label="Loja">
+      <section className="grid gap-8 md:grid-cols-[240px_1fr] md:gap-10 lg:gap-14" aria-label="Loja">
         <aside className="hidden md:block">{filters}</aside>
         <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
           <SheetContent>
@@ -95,13 +95,13 @@ export function CatalogMarket() {
           </SheetContent>
         </Sheet>
         <div className="min-w-0">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-line/40 pb-4">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-line/40 pb-6">
             <div>
               <p className="font-display text-xs tracking-[0.22em] text-amber">MERCADO KURIO</p>
               <p className="mt-1 text-sm text-gold-2">{catalog.data ? `${catalog.data.total} obras com edição e preço em ETH` : 'Edições com preço em ETH'}</p>
             </div>
           </div>
-          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div className="flex flex-wrap gap-4 border-b border-line" role="tablist" aria-label="Recortes do catálogo">
               {tabs.map((tab) => {
                 const selected = search.tab === tab.id
@@ -138,18 +138,18 @@ export function CatalogMarket() {
             <p className="rounded-lg border border-line p-6 text-gold-2">Nenhum NFT encontrado com esses filtros.</p>
           ) : null}
           {catalog.data && catalog.data.items.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3" aria-busy={catalog.isFetching}>
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8" aria-busy={catalog.isFetching}>
               {catalog.data.items.map((nft) => (
                 <article key={nft.id} className="min-w-0">
-                  <Link to="/nfts/$nftId" params={{ nftId: nft.id }} search={{ edition: '1-50', qty: 1 }} className="motion-card group block rounded-2xl border border-line/40 bg-panel p-3">
+                  <Link to="/nfts/$nftId" params={{ nftId: nft.id }} search={{ edition: '1-50', qty: 1 }} className={`motion-card group block rounded-2xl border bg-panel p-4 ${nft.rare ? 'holo-card border-2' : 'border-[color:color-mix(in_srgb,var(--color-line)_50%,transparent)]'}`}>
                     <PointerTilt className="relative aspect-square overflow-hidden rounded-xl bg-[#d9d3c3]">
                       {nft.rare ? <Badge className="absolute top-3 left-3 z-10">RARO</Badge> : null}
                       <NftMedia art={nft} />
                       <span className="motion-reveal pointer-events-none absolute inset-x-3 bottom-3 z-10 rounded-full bg-ink/80 px-3 py-1 text-center text-xs text-cream">Abrir obra</span>
                     </PointerTilt>
-                    <p className="mt-3 text-[11px] tracking-[0.16em] text-gold uppercase">{networks.find((item) => item.id === nft.network)?.label}</p>
-                    <h2 className="mt-1 truncate font-display text-lg tracking-wide">{nft.name}</h2>
-                    <p className="mt-1 text-sm font-semibold text-amber">
+                    <p className="mt-4 text-[11px] tracking-[0.16em] text-gold uppercase">{networks.find((item) => item.id === nft.network)?.label}</p>
+                    <h2 className="mt-2 truncate font-display text-lg tracking-wide">{nft.name}</h2>
+                    <p className="mt-2 text-sm font-semibold text-amber">
                       {formatEthLabel(nft.listPriceEth)}{' '}
                       {nft.compareAtEth ? <span className="font-normal text-gold line-through">{formatEth(nft.compareAtEth)} ETH</span> : null}
                     </p>
@@ -159,7 +159,7 @@ export function CatalogMarket() {
             </div>
           ) : null}
           {catalog.data && catalog.data.totalPages > 1 ? (
-            <nav className="mt-6 flex justify-end gap-2" aria-label="Paginação">
+            <nav className="mt-10 flex justify-end gap-2" aria-label="Paginação">
               {Array.from({ length: catalog.data.totalPages }, (_, index) => index + 1).map((page) => (
                 <button key={page} type="button" aria-current={page === catalog.data?.page ? 'page' : undefined} className={`motion-press size-8 rounded-md border border-line text-sm ${page === catalog.data?.page ? 'bg-amber text-ink' : ''}`} onClick={() => update({ page }, false)}>
                   {page}
@@ -189,7 +189,7 @@ function Filters({
   const catalog = useQuery({ queryKey: ['nfts', search], queryFn: ({ signal }) => fetchCatalog(toQuery(search), signal) })
   const facets = catalog.data?.facets
   return (
-    <div className="space-y-6 md:rounded-2xl md:bg-panel md:p-5">
+    <div className="space-y-8 md:rounded-2xl md:bg-panel md:p-6">
       <div>
         <p className="font-display text-xs tracking-[0.22em] text-amber">A LOJA</p>
         <h2 className="mt-2 mb-3 font-semibold">Coleções</h2>
@@ -259,7 +259,7 @@ function Filters({
 
 function CatalogSkeleton() {
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-3" data-testid="catalog-skeleton" aria-hidden="true">
+    <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8" data-testid="catalog-skeleton" aria-hidden="true">
       {Array.from({ length: 6 }, (_, index) => (
         <div key={index}>
           <Skeleton className="aspect-square" />

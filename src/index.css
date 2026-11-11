@@ -177,6 +177,41 @@
   animation: kurio-float 7s ease-in-out infinite;
 }
 
+@property --holo-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 120deg;
+}
+
+.holo-card {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--color-panel), var(--color-panel)) padding-box,
+    conic-gradient(from var(--holo-angle), #e89b55, #f5f1eb, #8fd0ff, #d7b0ff, #f0c27a, #e89b55) border-box;
+  animation: kurio-holo-border 9s linear infinite;
+}
+
+.holo-card .pointer-tilt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(115deg, transparent 18%, rgba(255, 255, 255, 0.7) 40%, rgba(143, 208, 255, 0.55) 50%, rgba(215, 176, 255, 0.45) 58%, rgba(232, 155, 85, 0.5) 66%, transparent 84%),
+    linear-gradient(160deg, rgba(143, 208, 255, 0.28), transparent 42%, rgba(232, 155, 85, 0.22));
+  background-size: 240% 240%, 100% 100%;
+  background-position: 0% 40%, center;
+  mix-blend-mode: overlay;
+  animation: kurio-holo-sheen 7s ease-in-out infinite;
+}
+
+.holo-card .pointer-tilt[data-tilt='on']::after {
+  animation: none;
+  background-position: var(--pointer-x, 50%) var(--pointer-y, 50%);
+}
+
 .motion-card {
   transition: transform 280ms ease;
 }
@@ -298,6 +333,18 @@
   }
 }
 
+@keyframes kurio-holo-border {
+  to {
+    --holo-angle: 480deg;
+  }
+}
+
+@keyframes kurio-holo-sheen {
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -307,7 +354,9 @@
   .motion-rise,
   .motion-float,
   .scroll-fade,
-  .scroll-stagger > * {
+  .scroll-stagger > *,
+  .holo-card,
+  .holo-card .pointer-tilt::after {
     animation: none;
   }
 
