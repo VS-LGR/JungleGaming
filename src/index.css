@@ -186,30 +186,44 @@
 .holo-card {
   border-color: transparent;
   background:
-    linear-gradient(var(--color-panel), var(--color-panel)) padding-box,
+    linear-gradient(transparent, transparent) padding-box,
     conic-gradient(from var(--holo-angle), #e89b55, #f5f1eb, #8fd0ff, #d7b0ff, #f0c27a, #e89b55) border-box;
   animation: kurio-holo-border 9s linear infinite;
 }
 
-.holo-card .pointer-tilt::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  border-radius: inherit;
+.holo-glass {
+  --gx: 28%;
+  --gy: 18%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 0.9rem;
+  padding: 0.9rem;
   background:
-    linear-gradient(115deg, transparent 18%, rgba(255, 255, 255, 0.7) 40%, rgba(143, 208, 255, 0.55) 50%, rgba(215, 176, 255, 0.45) 58%, rgba(232, 155, 85, 0.5) 66%, transparent 84%),
-    linear-gradient(160deg, rgba(143, 208, 255, 0.28), transparent 42%, rgba(232, 155, 85, 0.22));
-  background-size: 240% 240%, 100% 100%;
-  background-position: 0% 40%, center;
-  mix-blend-mode: overlay;
-  animation: kurio-holo-sheen 7s ease-in-out infinite;
+    linear-gradient(165deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08) 32%, rgba(20, 13, 10, 0.42));
+  backdrop-filter: blur(18px) saturate(1.8);
+  -webkit-backdrop-filter: blur(18px) saturate(1.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -22px 36px rgba(143, 208, 255, 0.16);
 }
 
-.holo-card .pointer-tilt[data-tilt='on']::after {
-  animation: none;
-  background-position: var(--pointer-x, 50%) var(--pointer-y, 50%);
+.holo-glass > * {
+  position: relative;
+  z-index: 1;
+}
+
+.holo-glass::before {
+  content: "";
+  position: absolute;
+  inset: -28%;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(30% 22% at var(--gx) var(--gy), rgba(255, 255, 255, 0.78), transparent 64%),
+    radial-gradient(26% 20% at calc(100% - var(--gx)) calc(100% - var(--gy)), rgba(143, 208, 255, 0.42), transparent 66%);
+  mix-blend-mode: soft-light;
+  animation: kurio-liquid 9s ease-in-out infinite;
 }
 
 .motion-card {
@@ -339,10 +353,18 @@
   }
 }
 
-@keyframes kurio-holo-sheen {
+@keyframes kurio-liquid {
   50% {
-    background-position: 100% 50%;
+    transform: translate3d(5%, -4%, 0) scale(1.06);
   }
+}
+
+html[data-edition='figma'] .hero-slide,
+html[data-edition='figma'] .hero-slide[data-active='true'] {
+  mask-image: none;
+  -webkit-mask-image: none;
+  animation: none;
+  transition: opacity 240ms ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -356,7 +378,7 @@
   .scroll-fade,
   .scroll-stagger > *,
   .holo-card,
-  .holo-card .pointer-tilt::after {
+  .holo-glass::before {
     animation: none;
   }
 

@@ -11,6 +11,7 @@ const UnavailableDialog = lazy(() => import('@/components/shell-dialogs').then((
 const SearchDialog = lazy(() => import('@/components/shell-dialogs').then((module) => ({ default: module.SearchDialog })))
 const AccountMenu = lazy(() => import('@/components/account-menu').then((module) => ({ default: module.AccountMenu })))
 import { emptyHomeSearch } from '@/features/catalog/home-page'
+import { setEdition, useEdition, type Edition } from '@/lib/edition'
 import { useSession } from '@/features/session'
 import { getGuestId } from '@/lib/storage'
 import { refreshRealtime } from '@/realtime/client'
@@ -46,6 +47,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <SiteFooter onUnavailable={setTopic} />
       </div>
       {showMobileHome ? <MobileBar /> : null}
+      <EditionSwitch className="fixed bottom-20 left-1/2 z-40 inline-flex -translate-x-1/2 lg:hidden" />
       {topic ? (
         <Suspense fallback={null}>
           <UnavailableDialog topic={topic} onClose={() => setTopic(null)} />
@@ -117,6 +119,7 @@ function SiteHeader({ onUnavailable }: { onUnavailable: (topic: string) => void 
           )}
         </nav>
         <div className="ml-auto flex items-center gap-2">
+          <EditionSwitch className="mr-1 hidden lg:inline-flex" />
           <button type="button" className="motion-press hidden size-10 items-center justify-center text-cream md:inline-flex" aria-label="Buscar coleções" onClick={() => setSearchOpen(true)}>
             <Search className="size-5" />
           </button>
@@ -142,6 +145,32 @@ function SiteHeader({ onUnavailable }: { onUnavailable: (topic: string) => void 
         </Suspense>
       ) : null}
     </header>
+  )
+}
+
+function EditionSwitch({ className }: { className?: string }) {
+  const edition = useEdition()
+  const options: { id: Edition; label: string }[] = [
+    { id: 'propria', label: 'Própria' },
+    { id: 'figma', label: 'Figma' },
+  ]
+  return (
+    <div role="group" aria-label="Versão da interface" className={`overflow-hidden rounded-full border border-line bg-ink ${className ?? ''}`}>
+      {options.map((option) => {
+        const selected = edition === option.id
+        return (
+          <button
+            key={option.id}
+            type="button"
+            aria-pressed={selected}
+            className={`px-3 py-1 text-xs ${selected ? 'bg-amber text-ink' : 'text-gold-2'}`}
+            onClick={() => setEdition(option.id)}
+          >
+            {option.label}
+          </button>
+        )
+      })}
+    </div>
   )
 }
 

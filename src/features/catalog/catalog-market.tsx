@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { Search } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useRef, useState, type PointerEvent } from 'react'
 import { fetchCatalog } from '@/api/endpoints'
 import { NftMedia } from '@/components/nft-media'
 import { PointerTilt } from '@/components/pointer-tilt'
@@ -15,10 +15,19 @@ import { Slider } from '@/components/ui/slider'
 import { PRICE_MAX, PRICE_MIN, categories, networks, sorts, tabs, type CatalogQuery, type SortId } from '@/contracts/types'
 import { rememberNftVersion } from '@/features/session'
 import { cachePolicy } from '@/lib/cache-policy'
+import { useEdition } from '@/lib/edition'
 import { formatEth, formatEthLabel } from '@/lib/money'
 import type { HomeSearch } from '@/features/catalog/home-page'
 
+function trackGlass(event: PointerEvent<HTMLDivElement>) {
+  const box = event.currentTarget.getBoundingClientRect()
+  event.currentTarget.style.setProperty('--gx', `${((event.clientX - box.left) / box.width) * 100}%`)
+  event.currentTarget.style.setProperty('--gy', `${((event.clientY - box.top) / box.height) * 100}%`)
+}
+
 export function CatalogMarket() {
+  const edition = useEdition()
+  const figma = edition === 'figma'
   const search = useSearch({ from: '/' })
   const navigate = useNavigate()
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -68,7 +77,7 @@ export function CatalogMarket() {
   )
 
   return (
-    <div id="catalogo" className="mt-12 scroll-mt-8 md:mt-20">
+    <div id="catalogo" className={figma ? 'scroll-mt-8' : 'mt-12 scroll-mt-8 md:mt-20'}>
       <div className="mb-4 md:hidden">
         <form
           className="flex gap-2"
@@ -86,7 +95,7 @@ export function CatalogMarket() {
         </form>
       </div>
 
-      <section className="grid gap-8 md:grid-cols-[240px_1fr] md:gap-10 lg:gap-14" aria-label="Loja">
+      <section className={figma ? 'grid gap-6 md:grid-cols-[240px_1fr]' : 'grid gap-8 md:grid-cols-[240px_1fr] md:gap-10 lg:gap-14'} aria-label="Loja">
         <aside className="hidden md:block">{filters}</aside>
         <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
           <SheetContent>
@@ -95,13 +104,15 @@ export function CatalogMarket() {
           </SheetContent>
         </Sheet>
         <div className="min-w-0">
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-line/40 pb-6">
-            <div>
-              <p className="font-display text-xs tracking-[0.22em] text-amber">MERCADO KURIO</p>
-              <p className="mt-1 text-sm text-gold-2">{catalog.data ? `${catalog.data.total} obras com edição e preço em ETH` : 'Edições com preço em ETH'}</p>
+          {figma ? null : (
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-line/40 pb-6">
+              <div>
+                <p className="font-display text-xs tracking-[0.22em] text-amber">MERCADO KURIO</p>
+                <p className="mt-1 text-sm text-gold-2">{catalog.data ? `${catalog.data.total} obras com edição e preço em ETH` : 'Edições com preço em ETH'}</p>
+              </div>
             </div>
-          </div>
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          )}
+          <div className={figma ? 'mb-4 flex flex-wrap items-end justify-between gap-3' : 'mb-8 flex flex-wrap items-end justify-between gap-4'}>
             <div className="flex flex-wrap gap-4 border-b border-line" role="tablist" aria-label="Recortes do catálogo">
               {tabs.map((tab) => {
                 const selected = search.tab === tab.id
@@ -138,28 +149,33 @@ export function CatalogMarket() {
             <p className="rounded-lg border border-line p-6 text-gold-2">Nenhum NFT encontrado com esses filtros.</p>
           ) : null}
           {catalog.data && catalog.data.items.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8" aria-busy={catalog.isFetching}>
-              {catalog.data.items.map((nft) => (
+            <div className={figma ? 'grid grid-cols-2 gap-4 lg:grid-cols-3' : 'grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8'} aria-busy={catalog.isFetching}>
+              {catalog.data.items.map((nft) => {
+                const rareGlass = nft.rare && !figma
+                return (
                 <article key={nft.id} className="min-w-0">
-                  <Link to="/nfts/$nftId" params={{ nftId: nft.id }} search={{ edition: '1-50', qty: 1 }} className={`motion-card group block rounded-2xl border bg-panel p-4 ${nft.rare ? 'holo-card border-2' : 'border-[color:color-mix(in_srgb,var(--color-line)_50%,transparent)]'}`}>
+                  <Link to="/nfts/$nftId" params={{ nftId: nft.id }} search={{ edition: '1-50', qty: 1 }} className={figma ? 'motion-card group block' : rareGlass ? 'motion-card group holo-card block rounded-2xl border-2' : 'motion-card group block rounded-2xl border bg-panel p-4 border-[color:color-mix(in_srgb,var(--color-line)_50%,transparent)]'}>
+                    <div className={rareGlass ? 'holo-glass' : undefined} onPointerMove={rareGlass ? trackGlass : undefined}>
                     <PointerTilt className="relative aspect-square overflow-hidden rounded-xl bg-[#d9d3c3]">
                       {nft.rare ? <Badge className="absolute top-3 left-3 z-10">RARO</Badge> : null}
                       <NftMedia art={nft} />
                       <span className="motion-reveal pointer-events-none absolute inset-x-3 bottom-3 z-10 rounded-full bg-ink/80 px-3 py-1 text-center text-xs text-cream">Abrir obra</span>
                     </PointerTilt>
-                    <p className="mt-4 text-[11px] tracking-[0.16em] text-gold uppercase">{networks.find((item) => item.id === nft.network)?.label}</p>
-                    <h2 className="mt-2 truncate font-display text-lg tracking-wide">{nft.name}</h2>
-                    <p className="mt-2 text-sm font-semibold text-amber">
+                    {figma ? null : <p className="mt-4 text-[11px] tracking-[0.16em] text-gold uppercase">{networks.find((item) => item.id === nft.network)?.label}</p>}
+                    <h2 className={figma ? 'mt-3 truncate text-sm' : 'mt-2 truncate font-display text-lg tracking-wide'}>{nft.name}</h2>
+                    <p className={figma ? 'text-sm font-semibold text-amber' : 'mt-2 text-sm font-semibold text-amber'}>
                       {formatEthLabel(nft.listPriceEth)}{' '}
                       {nft.compareAtEth ? <span className="font-normal text-gold line-through">{formatEth(nft.compareAtEth)} ETH</span> : null}
                     </p>
+                    </div>
                   </Link>
                 </article>
-              ))}
+                )
+              })}
             </div>
           ) : null}
           {catalog.data && catalog.data.totalPages > 1 ? (
-            <nav className="mt-10 flex justify-end gap-2" aria-label="Paginação">
+            <nav className={figma ? 'mt-6 flex justify-end gap-2' : 'mt-10 flex justify-end gap-2'} aria-label="Paginação">
               {Array.from({ length: catalog.data.totalPages }, (_, index) => index + 1).map((page) => (
                 <button key={page} type="button" aria-current={page === catalog.data?.page ? 'page' : undefined} className={`motion-press size-8 rounded-md border border-line text-sm ${page === catalog.data?.page ? 'bg-amber text-ink' : ''}`} onClick={() => update({ page }, false)}>
                   {page}
@@ -186,20 +202,21 @@ function Filters({
   onDraft: (min: number, max: number) => void
   onChange: (partial: Partial<HomeSearch>) => void
 }) {
+  const figma = useEdition() === 'figma'
   const catalog = useQuery({ queryKey: ['nfts', search], queryFn: ({ signal }) => fetchCatalog(toQuery(search), signal) })
   const facets = catalog.data?.facets
   return (
-    <div className="space-y-8 md:rounded-2xl md:bg-panel md:p-6">
+    <div className={figma ? 'space-y-6' : 'space-y-8 md:rounded-2xl md:bg-panel md:p-6'}>
       <div>
-        <p className="font-display text-xs tracking-[0.22em] text-amber">A LOJA</p>
-        <h2 className="mt-2 mb-3 font-semibold">Coleções</h2>
+        {figma ? null : <p className="font-display text-xs tracking-[0.22em] text-amber">A LOJA</p>}
+        <h2 className={figma ? 'mb-3 font-semibold' : 'mt-2 mb-3 font-semibold'}>Coleções</h2>
         <ul className="space-y-2">
           {categories.map((category) => {
             const count = facets?.categories.find((item) => item.id === category.id)?.count ?? 0
             const active = search.category === category.id
             return (
               <li key={category.id}>
-                <button type="button" aria-pressed={active} className={`motion-press flex w-full justify-between rounded-md px-2 py-1 text-left text-sm ${active ? 'bg-ink text-amber' : 'text-gold-2'}`} onClick={() => onChange({ category: active ? undefined : category.id })}>
+                <button type="button" aria-pressed={active} className={`motion-press flex w-full justify-between text-left text-sm ${figma ? '' : 'rounded-md px-2 py-1'} ${active ? (figma ? 'text-amber' : 'bg-ink text-amber') : 'text-gold-2'}`} onClick={() => onChange({ category: active ? undefined : category.id })}>
                   <span>{category.label}</span>
                   <span>({count})</span>
                 </button>
@@ -239,7 +256,7 @@ function Filters({
             const active = search.network === network.id
             return (
               <li key={network.id}>
-                <button type="button" aria-pressed={active} className={`motion-press flex w-full justify-between rounded-md px-2 py-1 text-left text-sm ${active ? 'bg-ink text-amber' : 'text-gold-2'}`} onClick={() => onChange({ network: active ? undefined : network.id })}>
+                <button type="button" aria-pressed={active} className={`motion-press flex w-full justify-between text-left text-sm ${figma ? '' : 'rounded-md px-2 py-1'} ${active ? (figma ? 'text-amber' : 'bg-ink text-amber') : 'text-gold-2'}`} onClick={() => onChange({ network: active ? undefined : network.id })}>
                   <span>{network.label}</span>
                   <span>({count})</span>
                 </button>

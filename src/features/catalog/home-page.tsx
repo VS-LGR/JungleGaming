@@ -4,6 +4,7 @@ import { PointerTilt } from '@/components/pointer-tilt'
 import { useUnavailable } from '@/components/shell'
 import { Button } from '@/components/ui/button'
 import type { CategoryId, NetworkId, SortId, TabId } from '@/contracts/types'
+import { useEdition } from '@/lib/edition'
 
 const CatalogMarket = lazy(() => import('@/features/catalog/catalog-market').then((module) => ({ default: module.CatalogMarket })))
 
@@ -42,11 +43,13 @@ const slides = [
 
 export function HomePage() {
   const unavailable = useUnavailable()
+  const figma = useEdition() === 'figma'
   const [slide, setSlide] = useState(0)
   const [paused, setPaused] = useState(false)
 
   function advance(event: AnimationEvent<HTMLSpanElement>) {
     if (event.animationName !== 'kurio-timer') return
+    if (document.documentElement.dataset.edition === 'figma') return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     setSlide((current) => (current + 1) % slides.length)
   }
@@ -54,7 +57,7 @@ export function HomePage() {
   return (
     <div className="mx-auto max-w-[1200px] px-4 pb-28 md:px-8">
       <section
-        className="grid items-center gap-8 py-8 md:min-h-[calc(100svh-9rem)] md:grid-cols-2 md:py-10"
+        className={figma ? 'grid items-center gap-8 py-8 md:grid-cols-2 md:py-10' : 'grid items-center gap-8 py-8 md:min-h-[calc(100svh-9rem)] md:grid-cols-2 md:py-10'}
         aria-roledescription="carrossel"
         aria-label="Destaques"
       >
@@ -86,6 +89,7 @@ export function HomePage() {
                 </button>
               ))}
             </div>
+            {figma ? null : (
             <button
               type="button"
               className="hero-timer"
@@ -96,6 +100,7 @@ export function HomePage() {
             >
               <span key={slide} className="hero-timer-fill" style={{ animationDuration: `${slideMs}ms` }} onAnimationEnd={advance} />
             </button>
+            )}
           </div>
         </div>
         <PointerTilt className="overflow-hidden rounded-[28px]">
