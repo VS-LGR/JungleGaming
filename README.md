@@ -22,6 +22,14 @@ A aplicação abre em `http://127.0.0.1:5173`. O preview de produção usa `http
 
 `VITE_ENABLE_MSW` fica `true` por padrão. Só desligue com o valor exato `false`.
 
+## Versões da interface
+
+O controle **Própria** / **Figma** fica no topo, no desktop, e acima da barra no celular. A escolha permanece em `localStorage` (`kurio-edition`).
+
+**Figma** é o layout pedido no desafio: herói com os três pontos, catálogo logo abaixo e cartões com imagem, nome e preço. Detalhe, carrinho, pagamento e conta são os mesmos nas duas versões.
+
+**Própria** abre por padrão. É o aprimoramento: o herói ocupa a tela no desktop e troca sozinho, a barra mostra o tempo que falta, a loja desce com mais espaço e a obra rara ganha vidro nas cores da página (creme, ouro e âmbar). Um clique na barra pausa a troca; o seguinte continua.
+
 ## Credenciais
 
 | E-mail | Senha | Coleção |

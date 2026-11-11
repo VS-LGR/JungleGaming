@@ -79,9 +79,17 @@ Definido em `src/lib/cache-policy.ts`.
 
 O evento ao vivo invalida o recurso. Se o socket cair, a tela do pedido e a do pagamento escutam a reconexão e consultam a REST. No cenário `drop-socket`, o mock fecha os sockets, confirma o pedido e reenvia o estado terminal no próximo `session.hello`.
 
+## Versões da interface
+
+Há duas apresentações da mesma aplicação. O controle **Própria** / **Figma** fica no cabeçalho a partir de 1024 px e, abaixo disso, acima da barra móvel. A escolha fica em `localStorage` (`kurio-edition`) e em `document.documentElement.dataset.edition`. Sem valor gravado, abre a Própria. Rotas, contratos, sessão, carrinho e eventos são os mesmos nas duas.
+
+**Figma** é a apresentação pedida no desafio. O herói troca pelos três pontos, sem barra de tempo e sem avanço automático. O catálogo começa logo abaixo do herói. O cartão mostra imagem, nome e preço. A barra lateral fica direto na página, sem o painel “A LOJA” e sem o bloco “MERCADO KURIO”. Detalhe, carrinho, pagamento, recibo, perfil e carteiras são iguais nas duas versões: o aprimoramento não redesenhou essas telas, e elas seguem os frames com os ajustes listados em Decisões de interface.
+
+**Própria** é o aprimoramento e o padrão da suíte visual. No desktop o herói ocupa a altura útil (`100svh` menos o cabeçalho) e a loja desce. Os três destaques avançam sozinhos a cada 5,6 s. A barra ao lado dos pontos enche com o tempo já decorrido; o trecho que falta é o tempo restante. O primeiro clique pausa e o segundo continua. O nome acessível fica na própria barra. O texto que sai some em 280 ms. O que entra permanece em creme e é revelado por uma máscara horizontal, com a borda suave percorrendo o título em cerca de 1,2 s. Com `prefers-reduced-motion: reduce` a barra não avança e a máscara não corre. A loja abre o espaçamento, usa painel na lateral, mostra a rede e o título em Oswald. Obra rara (`nft.rare`) recebe uma borda em âmbar, ouro e creme e um miolo de vidro nessas mesmas cores; o brilho acompanha o ponteiro. A versão Figma não renderiza a barra, a máscara nem o vidro.
+
 ## Decisões de interface
 
-- Desktop e mobile respondem às mesmas rotas. Login e cadastro são páginas em `/entrar` e `/cadastro`. No desktop o frame original é um diálogo sobre o início; a página inteira preserva o formulário, o foco e o retorno ao fluxo.
+- Desktop e mobile respondem às mesmas rotas. Login e cadastro são páginas em `/entrar` e `/cadastro`. No desktop o frame original é um diálogo sobre o início; a página inteira preserva o formulário, o foco e o retorno ao fluxo. As duas versões usam essas páginas.
 - Perfil, carteiras e recibo no mobile usam a mesma hierarquia empilhada, com a navegação da conta e o recibo em página.
 - Comprar inclui a edição e a quantidade e segue para o carrinho. O outro botão só adiciona.
 - A busca, os filtros, a ordenação, a aba e a página ficam na URL. Mudar filtro volta à página 1.
@@ -89,14 +97,13 @@ O evento ao vivo invalida o recurso. Se o socket cair, a tela do pedido e a do p
 - As contagens da barra lateral vêm da API. Os números pintados nos frames (por exemplo Música 65) são ilustrativos.
 - O export não trouxe fontes: o texto virou curva. A interface usa Manrope e os títulos de destaque usam Oswald.
 - O catálogo reutiliza quatro artes (jaqueta verde, fones, casaco claro e moletom roxo). Os frames repetiam essas mesmas imagens.
-- O carrossel do herói é manual, sem autoplay, para o teclado e para os baselines.
 - A faixa de preço vai de 0,02 a 12,30 ETH e só entra na URL ao clicar em Aplicar.
 
 ## Auditoria
 
-Playwright cobre filtros e histórico, detalhe inexistente, conta e troca de usuário, favorito com falha, carrinho e cupom, compra até o recibo, recusa, clique duplo com timeout idempotente, perfil e carteiras, `nft.updated` no checkout, evento duplicado, evento antigo, queda de conexão e teclado. Os baselines visuais são início, detalhe, carrinho e pagamento, em 1440 e 390.
+Playwright cobre filtros e histórico, detalhe inexistente, conta e troca de usuário, favorito com falha, carrinho e cupom, compra até o recibo, recusa, clique duplo com timeout idempotente, perfil e carteiras, `nft.updated` no checkout, evento duplicado, evento antigo, queda de conexão e teclado. Os baselines visuais são início, detalhe, carrinho e pagamento, em 1440 e 390, na versão Própria. O `boot` da suíte liga `prefers-reduced-motion`, então o herói fica no primeiro destaque e a barra permanece vazia.
 
-O Lighthouse 12.8.2 mede início e detalhe, mobile e desktop, três vezes, e grava a mediana de Performance, Acessibilidade, Best Practices, SEO, LCP, CLS e TBT. As metas são 90, 95, 95 e 90. A mediana em Node 20.18, em 10 de novembro de 2026, foi:
+O Lighthouse 12.8.2 mede início e detalhe, mobile e desktop, três vezes, e grava a mediana de Performance, Acessibilidade, Best Practices, SEO, LCP, CLS e TBT. As metas são 90, 95, 95 e 90. A mediana em Node 20.18, em 10 de novembro de 2026, é anterior ao herói automático, ao vidro das obras raras e ao controle de versão:
 
 | Página | Perfil | Performance | Acessibilidade | Best Practices | SEO | LCP | CLS | TBT |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
