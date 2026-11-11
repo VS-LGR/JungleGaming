@@ -86,7 +86,7 @@ export function CatalogMarket() {
         </form>
       </div>
 
-      <section id="catalogo" className="grid gap-6 md:grid-cols-[240px_1fr]">
+      <section id="catalogo" className="grid scroll-mt-8 gap-6 md:grid-cols-[240px_1fr]">
         <aside className="hidden md:block">{filters}</aside>
         <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
           <SheetContent>
