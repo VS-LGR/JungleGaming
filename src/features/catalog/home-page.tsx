@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useState, type AnimationEvent } from 'react'
 import { NftMedia } from '@/components/nft-media'
 import { PointerTilt } from '@/components/pointer-tilt'
 import { useUnavailable } from '@/components/shell'
@@ -19,6 +19,8 @@ export type HomeSearch = {
   min?: string
   max?: string
 }
+
+const slideMs = 5600
 
 const slides = [
   {
@@ -41,15 +43,13 @@ const slides = [
 export function HomePage() {
   const unavailable = useUnavailable()
   const [slide, setSlide] = useState(0)
-  const [held, setHeld] = useState(false)
-  const [manualPause, setManualPause] = useState(false)
-  const paused = held || manualPause
+  const [paused, setPaused] = useState(false)
 
-  useEffect(() => {
-    if (paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const timer = window.setInterval(() => setSlide((current) => (current + 1) % slides.length), 5600)
-    return () => window.clearInterval(timer)
-  }, [paused, slide])
+  function advance(event: AnimationEvent<HTMLSpanElement>) {
+    if (event.animationName !== 'kurio-timer') return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    setSlide((current) => (current + 1) % slides.length)
+  }
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 pb-28 md:px-8">
@@ -57,13 +57,6 @@ export function HomePage() {
         className="grid items-center gap-8 py-8 md:min-h-[calc(100svh-9rem)] md:grid-cols-2 md:py-10"
         aria-roledescription="carrossel"
         aria-label="Destaques"
-        onMouseEnter={() => setHeld(true)}
-        onMouseLeave={() => setHeld(false)}
-        onFocusCapture={() => setHeld(true)}
-        onBlurCapture={(event) => {
-          const next = event.relatedTarget
-          if (!(next instanceof Node) || !event.currentTarget.contains(next)) setHeld(false)
-        }}
       >
         <div>
           <div className="hero-stack">
@@ -93,8 +86,15 @@ export function HomePage() {
                 </button>
               ))}
             </div>
-            <button type="button" className="text-sm text-gold-2" aria-pressed={manualPause} onClick={() => setManualPause((current) => !current)}>
-              {manualPause ? 'Continuar destaques' : 'Pausar destaques'}
+            <button
+              type="button"
+              className="hero-timer"
+              data-paused={paused ? 'true' : undefined}
+              aria-pressed={paused}
+              aria-label={paused ? 'Continuar a troca de destaques' : 'Pausar a troca de destaques'}
+              onClick={() => setPaused((current) => !current)}
+            >
+              <span key={slide} className="hero-timer-fill" style={{ animationDuration: `${slideMs}ms` }} onAnimationEnd={advance} />
             </button>
           </div>
         </div>
